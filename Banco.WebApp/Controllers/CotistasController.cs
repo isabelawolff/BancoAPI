@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Banco.Dominio;
 using Banco.Infraestrutura.AcessoDados.Contexto;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace Banco.WebApp.Controllers
 {
@@ -22,7 +25,19 @@ namespace Banco.WebApp.Controllers
         // GET: Cotistas
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Cotistas.ToListAsync());
+            IEnumerable<Cotista> cotistas = new List<Cotista>();
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("https://bancowebapiwolff.azurewebsites.net");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var httpResponseMessage = await client.GetAsync("/api/cotistas");
+
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                var serializadoCotistas = await httpResponseMessage.Content.ReadAsStringAsync();
+                cotistas = JsonConvert.DeserializeObject<IEnumerable<Cotista>>(serializadoCotistas);
+            }
+            return View(cotistas);
         }
 
         // GET: Cotistas/Details/5
