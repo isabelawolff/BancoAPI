@@ -9,5 +9,6 @@ namespace Banco.Dominio
         public int Id { get; set; }
         public int IdCotista { get; set; }
         public int Saldo { get; set; }
+        public BloqueioContaCotistaEnum SituacaoContaCotista { get; set; }
     }
 }
